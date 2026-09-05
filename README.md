@@ -1,6 +1,6 @@
 # db-playground
 
-[![Build](https://github.com/Fortunoxx/db-playground/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Fortunoxx/db-playground/actions/workflows/build.yml)
+[![Build](https://github.com/Fortunoxx/playground/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Fortunoxx/playground/actions/workflows/build.yml)
 
 A .NET 10 Web API for experimenting with Entity Framework Core migrations while switching between SQL Server and PostgreSQL in Docker Desktop.
 
