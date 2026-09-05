@@ -1,5 +1,7 @@
 using DbPlayground.Api.Data;
+using DbPlayground.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using Refit;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +28,16 @@ builder.Services.AddDbContext<CustomerDbContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services
+    .AddRefitClient<IRulesApi>()
+    .ConfigureHttpClient(client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration["RulesService:BaseUrl"] ?? "http://localhost:62600");
+        var username = builder.Configuration["RulesService:Username"] ?? "kieserver";
+        var password = builder.Configuration["RulesService:Password"] ?? "kieserver1!";
+        var credentials = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{username}:{password}"));
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", credentials);
+    });
 
 var app = builder.Build();
 

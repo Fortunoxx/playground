@@ -20,6 +20,14 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql
 
+  rules:
+    image: quay.io/kiegroup/kie-server-showcase:7.74.0.Final
+    environment:
+      KIE_SERVER_USER: kieserver
+      KIE_SERVER_PWD: kieserver1!
+    ports:
+      - "62600:8080"
+
 volumes:
   sqlserver-data:
   postgres-data:
