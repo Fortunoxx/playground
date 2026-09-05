@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DbPlayground.Api/DbPlayground.Api.csproj" />
+  </Folder>
+</Solution>
