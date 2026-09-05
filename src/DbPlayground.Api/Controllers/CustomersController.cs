@@ -30,6 +30,7 @@ public sealed class CustomersController(CustomerDbContext dbContext) : Controlle
             Name = request.Name,
             Email = request.Email,
             Phone = request.Phone,
+            BirthDate = request.BirthDate,
             CreatedAtUtc = DateTime.UtcNow
         };
 
@@ -51,6 +52,7 @@ public sealed class CustomersController(CustomerDbContext dbContext) : Controlle
         customer.Name = request.Name;
         customer.Email = request.Email;
         customer.Phone = request.Phone;
+        customer.BirthDate = request.BirthDate;
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return NoContent();

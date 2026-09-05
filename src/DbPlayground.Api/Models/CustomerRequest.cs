@@ -16,4 +16,7 @@ public sealed class CustomerRequest
     [Phone]
     [StringLength(40)]
     public string? Phone { get; set; }
+
+    [DataType(DataType.Date)]
+    public DateOnly BirthDate { get; set; }
 }

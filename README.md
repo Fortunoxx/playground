@@ -57,6 +57,7 @@ Example request body:
 {
   "name": "Ada Lovelace",
   "email": "ada@example.com",
-  "phone": "+1 555 0100"
+  "phone": "+1 555 0100",
+  "birthDate": "1815-12-10"
 }
 ```

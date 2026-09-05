@@ -10,5 +10,7 @@ public sealed class Customer
 
     public string? Phone { get; set; }
 
+    public DateOnly BirthDate { get; set; }
+
     public DateTime CreatedAtUtc { get; set; }
 }

@@ -15,6 +15,7 @@ public class CustomerDbContext(DbContextOptions options) : DbContext(options)
             entity.Property(customer => customer.Name).HasMaxLength(120).IsRequired();
             entity.Property(customer => customer.Email).HasMaxLength(320).IsRequired();
             entity.Property(customer => customer.Phone).HasMaxLength(40);
+            entity.Property(customer => customer.BirthDate).HasColumnType("date").IsRequired();
             entity.Property(customer => customer.CreatedAtUtc).IsRequired();
             entity.HasIndex(customer => customer.Email).IsUnique();
         });
