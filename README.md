@@ -1,6 +1,10 @@
 # db-playground
 
+[![Build](https://github.com/Fortunoxx/db-playground/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/Fortunoxx/db-playground/actions/workflows/build.yml)
+
 A .NET 10 Web API for experimenting with Entity Framework Core migrations while switching between SQL Server and PostgreSQL in Docker Desktop.
+
+The build workflow runs restore and Release builds for pushes and pull requests targeting `main`.
 
 When running in Development, the interactive Scalar API client is available at `http://localhost:5088/scalar` and the raw OpenAPI document is available at `http://localhost:5088/openapi/v1.json`.
 
