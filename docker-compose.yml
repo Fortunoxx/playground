@@ -5,7 +5,7 @@ services:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "Your_strong_password123"
     ports:
-      - "${PORT_PREFIX}143:1433"
+      - "${PORT_PREFIX:-62}143:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
 
@@ -16,17 +16,25 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "${PORT_PREFIX}543:5432"
+      - "${PORT_PREFIX:-62}543:5432"
     volumes:
       - postgres-data:/var/lib/postgresql
 
   rules:
-    image: quay.io/kiegroup/kie-server-showcase:7.74.0.Final
+    build:
+      context: docker/kie-server
+    image: db-playground-kie-server:7.74.0.Final
     environment:
       KIE_SERVER_USER: kieserver
       KIE_SERVER_PWD: kieserver1!
     ports:
       - "62600:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u $$KIE_SERVER_USER:$$KIE_SERVER_PWD http://localhost:8080/kie-server/services/rest/server > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
 volumes:
   sqlserver-data:

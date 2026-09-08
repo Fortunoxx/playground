@@ -28,7 +28,15 @@ $env:Database__Provider = "SqlServer"
 dotnet run --project src/DbPlayground.Api
 ```
 
-`docker compose up -d` also starts the official `quay.io/kiegroup/kie-server-showcase:7.74.0.Final` image. The main API calls KIE Server at `http://localhost:62600/kie-server/services/rest/server` through Refit. If the main API is later containerized, configure `RulesService__BaseUrl` as `http://rules:8080/kie-server/services/rest/server` instead.
+`docker compose up -d` starts a derived `quay.io/kiegroup/kie-server-showcase:7.74.0.Final` image with the RESTEasy Jackson provider enabled. The main API calls KIE Server at `http://localhost:62600/kie-server/services/rest/server` through Refit. If the main API is later containerized, configure `RulesService__BaseUrl` as `http://rules:8080/kie-server/services/rest/server` instead.
+
+The Drools rules artifact is in `rules/`. Deployment is automated with Docker Maven and the KIE container REST API:
+
+```powershell
+./scripts/deploy-rules.ps1
+```
+
+The script builds `rules/target/order-rules-1.0.0.jar` in a Java 11 Maven container, installs it into the KIE Server local Maven repository, deploys it as container `order-rules`, and verifies that the container reaches `STARTED`. The artifact contains the `order-rules-session` KIE session and the adult-customer example rule.
 
 ## Run with PostgreSQL
 
@@ -89,7 +97,7 @@ Order endpoints:
 - `POST /api/orders`
 - `DELETE /api/orders/{id}`
 
-The database migration seeds product `1`, `Restricted Starter Product`, with a rule requiring the customer to be at least 18 years old. When an order is created, the main API sends a KIE Server command payload through `IRulesApi` and only persists the order when Drools returns an allowed result. Denied orders return `422 Unprocessable Entity`; an unavailable rules service returns `503 Service Unavailable`. The KIE container named `order-rules` must contain the deployed Drools KJAR/rule session `order-rules-session` before order authorization can run.
+The database migration seeds product `1`, `Restricted Starter Product`, with a rule requiring the customer to be at least 18 years old. When an order is created, the main API sends a KIE Server command payload through `IRulesApi` and only persists the order when Drools returns an allowed result. Denied orders return `422 Unprocessable Entity`; an unavailable rules service returns `503 Service Unavailable`. The KIE container named `order-rules` contains the deployed rules JAR and exposes the `order-rules-session` session.
 
 Example order request:
 

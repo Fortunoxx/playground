@@ -21,8 +21,14 @@ public sealed class KieServerCommand
     [JsonPropertyName("insert")]
     public KieInsertCommand? Insert { get; set; }
 
+    [JsonPropertyName("set-global")]
+    public KieSetGlobalCommand? SetGlobal { get; set; }
+
     [JsonPropertyName("fire-all-rules")]
     public object? FireAllRules { get; set; }
+
+    [JsonPropertyName("get-global")]
+    public KieGetGlobalCommand? GetGlobal { get; set; }
 }
 
 public sealed class KieInsertCommand
@@ -32,6 +38,24 @@ public sealed class KieInsertCommand
 
     [JsonPropertyName("out-identifier")]
     public string? OutIdentifier { get; set; }
+}
+
+public sealed class KieSetGlobalCommand
+{
+    [JsonPropertyName("identifier")]
+    public required string Identifier { get; set; }
+
+    [JsonPropertyName("object")]
+    public required object Object { get; set; }
+}
+
+public sealed class KieGetGlobalCommand
+{
+    [JsonPropertyName("identifier")]
+    public required string Identifier { get; set; }
+
+    [JsonPropertyName("out-identifier")]
+    public required string OutIdentifier { get; set; }
 }
 
 public sealed class KieServerResponse
