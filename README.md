@@ -5,7 +5,7 @@
 [![Docker Compose](https://img.shields.io/badge/Docker%20Compose-supported-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-025E8C?logo=dependabot&logoColor=white)](https://github.com/Fortunoxx/playground/network/updates)
 
-A .NET 10 Web API for experimenting with Entity Framework Core migrations while switching between SQL Server and PostgreSQL in Docker Desktop. It also demonstrates a separate JBoss KIE Server/Drools container called through a typed Refit client.
+A .NET 10 Web API for experimenting with Entity Framework Core migrations while switching between SQL Server and PostgreSQL in Docker Desktop. It also demonstrates order authorization with Microsoft RulesEngine and a separate JBoss KIE Server/Drools integration.
 
 The build workflow runs restore and Release builds for pushes and pull requests targeting `main`.
 
@@ -97,7 +97,9 @@ Order endpoints:
 - `POST /api/orders`
 - `DELETE /api/orders/{id}`
 
-The database migration seeds product `1`, `Restricted Starter Product`, with a rule requiring the customer to be at least 18 years old. When an order is created, the main API sends a KIE Server command payload through `IRulesApi` and only persists the order when Drools returns an allowed result. Denied orders return `422 Unprocessable Entity`; an unavailable rules service returns `503 Service Unavailable`. The KIE container named `order-rules` contains the deployed rules JAR and exposes the `order-rules-session` session.
+The database migration seeds product `1`, `Restricted Starter Product`, with a rule requiring the customer to be at least 18 years old. When an order is created, the main API evaluates the `OrderWorkflow` workflow from `src/DbPlayground.Api/rules.json` with Microsoft RulesEngine and only persists the order when the workflow returns an allowed result. The rules file and workflow name can be changed with `RuleEngine__RulesFile` and `RuleEngine__WorkflowName`. Denied orders return `422 Unprocessable Entity`.
+
+The original KIE Server integration remains available through `IRulesApi` for comparison. The KIE container named `order-rules` contains the deployed rules JAR and exposes the `order-rules-session` session.
 
 Example order request:
 

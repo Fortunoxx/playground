@@ -1,0 +1,28 @@
+[
+  {
+    "WorkflowName": "OrderWorkflow",
+    "Rules": [
+      {
+        "RuleName": "Allow adult customer",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "order.BirthDate != null && order.EvaluationAtUtc != null && order.BirthDate.Value.AddYears(18) <= order.EvaluationAtUtc.Value",
+        "SuccessEvent": "allowed",
+        "ErrorMessage": "Customer must be at least 18 years old."
+      },
+      {
+        "RuleName": "Deny non-adult customer",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "order.BirthDate != null && order.EvaluationAtUtc != null && order.BirthDate.Value.AddYears(18) > order.EvaluationAtUtc.Value",
+        "SuccessEvent": "denied",
+        "ErrorMessage": "Customer must be at least 18 years old."
+      },
+      {
+        "RuleName": "Deny invalid order fact",
+        "RuleExpressionType": "LambdaExpression",
+        "Expression": "order.BirthDate == null || order.EvaluationAtUtc == null",
+        "SuccessEvent": "denied",
+        "ErrorMessage": "The order fact is missing birthDate or evaluationAtUtc."
+      }
+    ]
+  }
+]

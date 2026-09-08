@@ -32,6 +32,7 @@ builder.Services.AddDbContext<SqlServerMigrationDbContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddSingleton<IRulesEngineEvaluator, RulesEngineEvaluator>();
 builder.Services
     .AddRefitClient<IRulesApi>()
     .ConfigureHttpClient(client =>
