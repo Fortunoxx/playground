@@ -3,8 +3,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DbPlayground.Api.Data;
 
-public class CustomerDbContext(DbContextOptions options) : DbContext(options)
+public class CustomerDbContext : DbContext
 {
+    public CustomerDbContext(DbContextOptions<CustomerDbContext> options)
+        : base(options)
+    {
+    }
+
+    protected CustomerDbContext(DbContextOptions options)
+        : base(options)
+    {
+    }
+
     public DbSet<Customer> Customers => Set<Customer>();
 
     public DbSet<Product> Products => Set<Product>();

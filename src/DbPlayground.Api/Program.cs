@@ -25,6 +25,10 @@ builder.Services.AddDbContext<CustomerDbContext>(options =>
         throw new InvalidOperationException("Database:Provider must be SqlServer or PostgreSql.");
     }
 });
+builder.Services.AddDbContext<PostgreSqlMigrationDbContext>(options =>
+    options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<SqlServerMigrationDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -40,6 +44,20 @@ builder.Services
     });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    if (provider.Equals("PostgreSql", StringComparison.OrdinalIgnoreCase))
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<PostgreSqlMigrationDbContext>();
+        dbContext.Database.Migrate();
+    }
+    else
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<SqlServerMigrationDbContext>();
+        dbContext.Database.Migrate();
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
