@@ -48,20 +48,16 @@ The rule is authored and deployed from KIE Business Central using the root Compo
 2. Open KIE Business Central at `http://localhost:62151/business-central` and sign in with `admin`.
 3. Create or open the `MySpace` space.
 4. Create the `orders-rules` project. Expand **Configure Advanced Options** and set these Maven coordinates explicitly:
-
-  - Group ID: `com.myspace`
-  - Artifact ID: `orders-rules`
-  - Version: `1.0.0-SNAPSHOT`
-
-  The explicit Artifact ID is important for the legacy Business Central image; leaving it implicit can produce a project with an invalid Maven POM.
+   - Group ID: `com.myspace`
+   - Artifact ID: `orders-rules`
+   - Version: `1.0.0-SNAPSHOT`
+     The explicit Artifact ID is important for the legacy Business Central image; leaving it implicit can produce a project with an invalid Maven POM.
 5. On the project screen, choose **Import Asset**, select `rules/orderDecision.drl`, enter `orderDecision.drl` as the asset name, and keep package `com.myspace.orders_rules`.
 6. Open the imported DRL. A Java `TestModel` data object is not required because the API inserts the order as a `Map` fact.
 7. Keep the following contract in the DRL:
-
-- `global java.util.Map orderDecision;`
-- An inserted fact with `birthDate`, `evaluationAtUtc`, `productId`, `quantity`, and `rules`.
-- A result in `orderDecision` containing `allowed` and `reason`.
-
+   - `global java.util.Map orderDecision;`
+   - An inserted fact with `birthDate`, `evaluationAtUtc`, `productId`, `quantity`, and `rules`.
+   - A result in `orderDecision` containing `allowed` and `reason`.
 8. Validate the asset and confirm that Business Central reports `Item successfully validated` or a successful module build.
 9. Save the asset.
 10. Return to the project screen and select **Deploy**. A successful build alone is not enough; verify the KIE Server REST endpoint below.
