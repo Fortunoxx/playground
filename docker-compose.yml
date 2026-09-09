@@ -20,13 +20,35 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql
 
-  rules:
-    build:
-      context: docker/kie-server
-    image: db-playground-kie-server:7.74.0.Final
+  business-central:
+    image: quay.io/kiegroup/business-central-workbench-showcase:latest
+    container_name: drools-workbench
+    ports:
+      - "${PORT_PREFIX:-62}151:8080"
+      - "${PORT_PREFIX:-62}150:8001"
+    volumes:
+      - business-central-data:/opt/jboss/wildfly/standalone/data
+      - business-central-git:/opt/jboss/wildfly/bin/.niogit
     environment:
       KIE_SERVER_USER: kieserver
       KIE_SERVER_PWD: kieserver1!
+      KIE_SERVER_CONTROLLER: http://rules:8080/kie-server/services/rest/server
+    depends_on:
+      - rules
+
+  rules:
+    image: quay.io/kiegroup/kie-server-showcase:latest
+    container_name: kie-server
+    environment:
+      KIE_SERVER_MODE: development
+      KIE_SERVER_ID: docker-kie-server
+      KIE_SERVER_USER: kieserver
+      KIE_SERVER_PWD: kieserver1!
+      KIE_SERVER_LOCATION: http://rules:8080/kie-server/services/rest/server
+      KIE_SERVER_CONTROLLER: http://business-central:8080/business-central/rest/controller
+      KIE_MAVEN_REPO: http://business-central:8080/business-central/maven2
+      KIE_MAVEN_REPO_USER: admin
+      KIE_MAVEN_REPO_PASSWORD: admin
     ports:
       - "62600:8080"
     healthcheck:
@@ -35,7 +57,12 @@ services:
       timeout: 5s
       retries: 12
       start_period: 30s
+    volumes:
+      - kie-server-data:/opt/jboss/wildfly/standalone/data
 
 volumes:
+  business-central-data:
+  business-central-git:
+  kie-server-data:
   sqlserver-data:
   postgres-data:

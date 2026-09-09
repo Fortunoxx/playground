@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
-  <kbase name="order-rules-base" packages="rules" default="true">
-    <ksession name="order-rules-session" type="stateful" default="true"/>
-  </kbase>
-</kmodule>
