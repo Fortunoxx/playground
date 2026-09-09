@@ -62,6 +62,24 @@ The rule is authored and deployed from KIE Business Central using the root Compo
 9. Save the asset.
 10. Return to the project screen and select **Deploy**. A successful build alone is not enough; verify the KIE Server REST endpoint below.
 
+### Add the deployment unit in Business Central
+
+After the project has been built and deployed to the Business Central Maven repository, add it to the KIE Server configuration:
+
+1. Open **Menu > Deploy > Execution Servers**.
+2. Select the `docker-kie-server` server configuration.
+3. Under **Deployment Units**, select **Add Deployment Unit**.
+4. Enter or select the following Maven coordinates:
+  - Name: `orders-rules`
+  - Group Name: `com.myspace`
+  - Artifact Id: `orders-rules`
+  - Version: `1.0.0-SNAPSHOT`
+  - Alias: leave empty
+5. Leave **Start Deployment Unit?** checked, then select **Finish**.
+6. Select the `docker-kie-server@rules:8080` remote server and confirm that the `orders-rules` container is listed and started.
+
+The deployment-unit form only lists artifacts that Business Central can find in its Maven repository. If it shows **No artifacts available**, first build and deploy the `orders-rules` project from the project screen, then reopen **Add Deployment Unit**. The deployment unit cannot be created from the form until the artifact is published.
+
 The Compose configuration must use the Docker-network address for controller callbacks and Maven resolution:
 
 ```yaml
