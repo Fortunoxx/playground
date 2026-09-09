@@ -3,6 +3,8 @@ using DbPlayground.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Refit;
 using Scalar.AspNetCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,8 +34,15 @@ builder.Services.AddDbContext<SqlServerMigrationDbContext>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddHttpClient();
 builder.Services
-    .AddRefitClient<IRulesApi>()
+    .AddRefitClient<IRulesApi>(new RefitSettings
+    {
+        ContentSerializer = new SystemTextJsonContentSerializer(new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        })
+    })
     .ConfigureHttpClient(client =>
     {
         client.BaseAddress = new Uri(builder.Configuration["RulesService:BaseUrl"] ?? "http://localhost:62600");

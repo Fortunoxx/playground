@@ -34,22 +34,48 @@ public sealed class OrdersController(CustomerDbContext dbContext, IRulesApi rule
         KieServerResponse evaluation;
         try
         {
-            evaluation = await rulesApi.EvaluateAsync("order-rules", new KieServerCommandRequest
+            var commandRequest = new KieServerCommandRequest
             {
                 Lookup = "order-rules-session",
-                    Commands =
-                    [
-                    new KieServerCommand { Insert = new KieInsertCommand { Object = new { birthDate = customer.BirthDate, rules = product.Rules.Where(rule => rule.IsActive).Select(rule => new { rule.MinimumAge, rule.MaximumAge, rule.ValidFromUtc, rule.ValidToUtc }) } } },
-                    new KieServerCommand { FireAllRules = new { } }
-                    ]
-            }, cancellationToken);
+                Commands =
+                [
+                    new Dictionary<string, object?>
+                    {
+                        ["set-global"] = new KieSetGlobalCommand { Identifier = "orderDecision", Object = new Dictionary<string, object?>() }
+                    },
+                    new Dictionary<string, object?>
+                    {
+                        ["insert"] = new KieInsertCommand { Object = new { birthDate = customer.BirthDate, evaluationAtUtc = evaluatedAtUtc, productId = product.Id, quantity = request.Quantity, rules = product.Rules.Where(rule => rule.IsActive).Select(rule => new { rule.MinimumAge, rule.MaximumAge, rule.ValidFromUtc, rule.ValidToUtc }) } }
+                    },
+                    new Dictionary<string, object?>
+                    {
+                        ["fire-all-rules"] = new { }
+                    },
+                    new Dictionary<string, object?>
+                    {
+                        ["get-global"] = new KieGetGlobalCommand { Identifier = "orderDecision", OutIdentifier = "decision" }
+                    }
+                ]
+            };
+            evaluation = await rulesApi.EvaluateAsync(
+                "orders-rules_1.0.0-SNAPSHOT",
+                commandRequest,
+                cancellationToken);
         }
         catch (ApiException exception)
         {
-            return Problem(detail: exception.Message, title: "The rules service rejected the evaluation request.", statusCode: StatusCodes.Status503ServiceUnavailable);
+            return Problem(detail: exception.Content ?? exception.Message, title: "The rules service rejected the evaluation request.", statusCode: StatusCodes.Status503ServiceUnavailable);
         }
 
-        var allowed = evaluation.Result.ValueKind == JsonValueKind.Object && evaluation.Result.TryGetProperty("allowed", out var allowedProperty) && allowedProperty.GetBoolean();
+        var allowed = evaluation.Result.ValueKind == JsonValueKind.Object
+            && evaluation.Result.TryGetProperty("execution-results", out var executionResults)
+            && executionResults.TryGetProperty("results", out var results)
+            && results.EnumerateArray().Any(result =>
+                result.TryGetProperty("key", out var key)
+                && key.GetString() == "decision"
+                && result.TryGetProperty("value", out var decision)
+                && decision.TryGetProperty("allowed", out var allowedProperty)
+                && allowedProperty.GetBoolean());
         if (!allowed) return UnprocessableEntity(new { message = "Drools did not authorize this order." });
 
         var order = new Order { CustomerId = customer.Id, ProductId = product.Id, Quantity = request.Quantity, UnitPrice = product.Price, CreatedAtUtc = evaluatedAtUtc };
